@@ -184,7 +184,7 @@ Quadratic growth becomes impractical as input size increases.
 
 ---
 
-### Approach 4: In-Place Hashing (Index as Key) (can modify original array , but dont use extra memory)
+### Approach 4: In-Place Hashing (Index as Key) (can modify original array , but dont use extra memory) and (array not allowed to have 0)
 
 A less commonly discussed but powerful technique.
 
