@@ -184,7 +184,7 @@ Quadratic growth becomes impractical as input size increases.
 
 ---
 
-### Approach 4: In-Place Hashing (Index as Key)
+### Approach 4: In-Place Hashing (Index as Key) (can modify original array , but dont use extra memory)
 
 A less commonly discussed but powerful technique.
 
@@ -211,6 +211,30 @@ Example techniques include:
 * Numbers are constrained to a specific range.
 * Extra memory is forbidden.
 * The array can be modified.
+
+  ```
+  public static boolean anyDuplicateInPlace(int[] numbers) {
+    boolean hasDuplicate = false;
+
+    for (int i = 0; i < numbers.length; i++) {
+        int index = Math.abs(numbers[i]) - 1;
+        
+        if (numbers[index] < 0) {
+            hasDuplicate = true; 
+            break; // Found it! Break early
+        }
+        numbers[index] = -numbers[index];
+    }
+    
+    // CLEAN UP: Restore the original array by making everything positive again
+    for (int i = 0; i < numbers.length; i++) {
+        numbers[i] = Math.abs(numbers[i]);
+    }
+    
+    return hasDuplicate;
+}
+
+  ```
 
 #### Why It's Interesting
 
