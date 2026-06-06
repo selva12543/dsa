@@ -276,3 +276,207 @@ However, it only works under specific constraints and is therefore less universa
 * Memory constrained → Sorting
 * Learning only → Brute Force
 * Special constrained-value problems → In-Place Hashing
+
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+# LeetCode 242: Valid Anagram (Java Guide)
+
+An **anagram** is a word or phrase formed by rearranging the letters of another word or phrase using all original letters exactly once.
+
+### Examples
+
+* `"anagram"` → `"nagaram"` ✅
+* `"rat"` → `"car"` ❌
+
+---
+
+## 🧠 Key Clue (How to Recognize the Problem)
+
+If you notice:
+
+* Order does **not** matter
+* Only the **frequency of characters** matters
+* You are comparing two strings or collections
+
+👉 Think: **Frequency Counting Problem**
+
+---
+
+## 🚀 Best Approach (Recommended)
+
+### 🥇 Fixed-Size Frequency Array (`int[26]`)
+
+Use this approach when the input contains only lowercase English letters (`a-z`).
+
+### Idea
+
+1. Create an integer array of size 26.
+2. Increment the count for each character in `s`.
+3. Decrement the count for each character in `t`.
+4. If all values are `0`, the strings are anagrams.
+
+### Complexity Analysis
+
+* **Time Complexity:** `O(n)`
+* **Space Complexity:** `O(1)`
+
+### Java Solution
+
+```java
+public class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        int[] count = new int[26];
+
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+            count[t.charAt(i) - 'a']--;
+        }
+
+        for (int num : count) {
+            if (num != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+### Why This Is the Best Approach
+
+* ⚡ Linear time complexity
+* 🧠 Constant extra space
+* 🔥 Fastest solution under standard LeetCode constraints
+
+---
+
+## ⚖️ Alternative Approaches
+
+### 🥈 HashMap Method (Scalable for Unicode)
+
+Use a dynamic map to track character frequencies.
+
+This approach is useful when the input may contain:
+
+* Uppercase letters
+* Numbers
+* Symbols
+* Unicode characters (e.g., emojis)
+
+### How It Works
+
+1. Count frequencies of characters in `s`.
+2. Subtract frequencies using `t`.
+3. Verify all counts become `0`.
+
+### Complexity Analysis
+
+* **Time Complexity:** `O(n)`
+* **Space Complexity:** `O(k)`
+
+Where `k` is the number of unique characters.
+
+### Java Solution
+
+```java
+import java.util.HashMap;
+
+public class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        HashMap<Character, Integer> map = new HashMap<>();
+
+        for (char c : s.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+
+        for (char c : t.toCharArray()) {
+            map.put(c, map.getOrDefault(c, 0) - 1);
+        }
+
+        for (int value : map.values()) {
+            if (value != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+---
+
+### 🥉 Sorting Method (Simple & Intuitive)
+
+Convert both strings into character arrays, sort them, and compare.
+
+### How It Works
+
+1. Convert strings into character arrays.
+2. Sort both arrays.
+3. Compare using `Arrays.equals()`.
+
+### Complexity Analysis
+
+* **Time Complexity:** `O(n log n)`
+* **Space Complexity:** `O(n)`
+
+### Java Solution
+
+```java
+import java.util.Arrays;
+
+public class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        char[] sChars = s.toCharArray();
+        char[] tChars = t.toCharArray();
+
+        Arrays.sort(sChars);
+        Arrays.sort(tChars);
+
+        return Arrays.equals(sChars, tChars);
+    }
+}
+```
+
+---
+
+## 📌 Cheat Sheet
+
+| Scenario                          | Recommended Approach        | Reason                            |
+| --------------------------------- | --------------------------- | --------------------------------- |
+| Lowercase English Letters (`a-z`) | Frequency Array (`int[26]`) | Fastest and most memory-efficient |
+| Unicode / Emojis / Symbols        | HashMap                     | Supports dynamic character sets   |
+| Quick Coding or Prototyping       | Sorting                     | Easiest to write and understand   |
+
+---
+
+## 🏁 Summary
+
+| Approach        | Time         | Space  | Notes                          |
+| --------------- | ------------ | ------ | ------------------------------ |
+| Frequency Array | `O(n)`       | `O(1)` | Best for interview constraints |
+| HashMap         | `O(n)`       | `O(k)` | Best for Unicode support       |
+| Sorting         | `O(n log n)` | `O(n)` | Simplest implementation        |
+
+### Recommendation
+
+✅ Use **Frequency Array** for LeetCode interviews.
+
+✅ Use **HashMap** when handling arbitrary character sets.
+
+✅ Use **Sorting** when readability matters more than performance.
