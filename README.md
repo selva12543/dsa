@@ -480,3 +480,433 @@ public class Solution {
 ✅ Use **HashMap** when handling arbitrary character sets.
 
 ✅ Use **Sorting** when readability matters more than performance.
+
+
+# =================================================================================================================================================================
+
+# Group Anagrams (Java) - Complete Interview Guide
+
+The **Group Anagrams** problem is an absolute classic in coding interviews. It is one of those foundational problems that bridges the gap between basic data structures and clever algorithmic thinking.
+
+This guide will help you understand the problem, why interviewers ask it, and the key concepts needed to solve it efficiently in Java.
+
+---
+
+## 1. What is the Problem?
+
+An **anagram** is a word formed by rearranging the letters of another word while using all original letters exactly once.
+
+### Example
+
+```text
+"eat", "tea", and "ate"
+```
+
+All three words contain the same characters and are therefore anagrams of each other.
+
+### Problem Statement
+
+Given an array of strings, group all anagrams together.
+
+### Input
+
+```java
+["eat", "tea", "tan", "ate", "nat", "bat"]
+```
+
+### Output
+
+```java
+[
+    ["eat", "tea", "ate"],
+    ["tan", "nat"],
+    ["bat"]
+]
+```
+
+---
+
+## 2. Why is This Problem Important?
+
+The Group Anagrams problem is frequently asked because it tests several fundamental programming concepts.
+
+### What It Evaluates
+
+#### 1. Data Structures
+
+Interviewers assess your understanding of:
+
+* HashMap
+* Arrays
+* Strings
+* Lists
+
+#### 2. Pattern Recognition
+
+You must identify a way to create a **unique identifier (key)** for words that are anagrams of each other.
+
+For example:
+
+```text
+eat → aet
+tea → aet
+ate → aet
+```
+
+Since all three produce the same sorted representation, they belong to the same group.
+
+#### 3. Optimization Skills
+
+There are multiple ways to solve this problem:
+
+* Brute-force approach (very slow)
+* Sorting-based approach (efficient)
+* Character frequency approach (more optimized)
+
+Interviewers want to see whether you can move from a naive solution to an efficient one.
+
+---
+
+## 3. Why Interviewers Love This Question
+
+This problem is popular because it combines:
+
+* Hashing
+* String manipulation
+* Array processing
+* Time complexity analysis
+
+It quickly reveals whether a candidate can:
+
+* Choose the right data structure
+* Design a smart key-generation strategy
+* Write clean and efficient code
+
+---
+
+## 4. How Interviewers Might Frame the Question
+
+Interviewers do not always directly ask:
+
+> "Write a program to group anagrams."
+
+Instead, they often disguise the problem in real-world scenarios.
+
+### Example 1: Word Game
+
+> You are building a feature for a word game where users get points for finding scrambled words. Group the user inputs by their base letters.
+
+### Example 2: Username Analysis
+
+> Given a list of usernames, group together users who used the exact same characters in their handles.
+
+### Example 3: Dictionary Processing
+
+> Organize words into clusters where each cluster contains words made from the same set of letters.
+
+Even though the wording changes, the underlying concept remains the same:
+
+**Group strings that contain identical characters.**
+
+---
+
+## Key Takeaway
+
+The Group Anagrams problem teaches one of the most important interview patterns:
+
+> Transform each item into a canonical form and use a HashMap to group similar items efficiently.
+
+Mastering this pattern will help you solve many other interview problems involving:
+
+* Hashing
+* String manipulation
+* Frequency counting
+* Data grouping
+* Pattern matching
+
+It is a must-know problem for coding interviews at companies ranging from startups to FAANG-level organizations.
+
+
+## 2. How to Spot the Pattern
+
+Whenever you see a problem asking you to **group**, **categorize**, or **collect** items based on a shared characteristic, your brain should immediately think:
+
+> **HashMap**
+
+The key insight in the **Group Anagrams** problem is finding a **universal key**.
+
+Even though words like `"eat"` and `"tea"` are spelled differently, they need to generate the **same key** so they can be placed into the same bucket in our HashMap.
+
+There are multiple ways to generate this key, which leads us to different solution approaches.
+
+---
+
+## 3. Method 1: Categorize by Sorting (The Intuitive Way)
+
+### Core Idea
+
+If you sort the letters of an anagram alphabetically, all anagrams become the exact same string.
+
+#### Example
+
+```text
+"eat" → "aet"
+"tea" → "aet"
+"ate" → "aet"
+```
+
+Since all anagrams produce the same sorted result, we can use the **sorted string as the HashMap key**.
+
+### Algorithm
+
+1. Create an empty HashMap.
+2. For each word:
+
+   * Sort its characters.
+   * Use the sorted string as the key.
+   * Add the original word to the list associated with that key.
+3. Return all the values from the HashMap.
+
+### Visualization
+
+```text
+Input:
+["eat", "tea", "tan", "ate", "nat", "bat"]
+
+HashMap:
+
+"aet" → ["eat", "tea", "ate"]
+"ant" → ["tan", "nat"]
+"abt" → ["bat"]
+```
+
+### Why It Works
+
+All anagrams contain the same characters with the same frequencies.
+
+Sorting rearranges those characters into a consistent order, causing every anagram in the group to generate an identical key.
+
+### Time Complexity
+
+* Sorting each word: O(k log k)
+* For n words: O(n × k log k)
+
+Where:
+
+* n = number of words
+* k = average length of each word
+
+### Space Complexity
+
+```text
+O(n × k)
+```
+
+For storing the HashMap and grouped anagrams.
+
+## Method 1: Categorize by Sorting
+
+### Idea
+
+Two strings are anagrams if their sorted forms are identical.
+
+For example:
+
+* `"eat"` → `"aet"`
+* `"tea"` → `"aet"`
+
+Since both produce the same sorted string, they belong to the same group.
+
+### Java Code
+
+```java
+import java.util.*;
+
+public class GroupAnagramsSorting {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        // Map to store: SortedString -> List of Original Strings
+        Map<String, List<String>> map = new HashMap<>();
+
+        for (String s : strs) {
+            // 1. Convert string to character array and sort it
+            char[] charArray = s.toCharArray();
+            Arrays.sort(charArray);
+            String sortedKey = new String(charArray);
+
+            // 2. If the key doesn't exist, create a new list
+            if (!map.containsKey(sortedKey)) {
+                map.put(sortedKey, new ArrayList<>());
+            }
+
+            // 3. Add the original string to the corresponding list
+            map.get(sortedKey).add(s);
+        }
+
+        // Return all the grouped lists
+        return new ArrayList<>(map.values());
+    }
+}
+```
+
+### Complexity Analysis (Beginner Level)
+
+Let:
+
+* **N** = Total number of strings
+* **K** = Maximum length of a string
+
+#### Time Complexity: O(N × K log K)
+
+We loop through all **N** words.
+
+For each word, sorting its characters takes **O(K log K)** time.
+
+Therefore:
+
+```
+O(N × K log K)
+```
+
+#### Space Complexity: O(N × K)
+
+We store all words inside the HashMap and the resulting grouped lists.
+
+---
+
+# Method 2: Categorize by Frequency Count (Optimal Approach)
+
+### Idea
+
+Sorting takes **O(K log K)** time.
+
+Since the strings contain only lowercase English letters (`a-z`), we can count the frequency of each character.
+
+Two words are anagrams if and only if their character frequencies are identical.
+
+Example:
+
+```
+eat → a=1, e=1, t=1
+tea → a=1, e=1, t=1
+```
+
+Both have the same frequency distribution, so they belong to the same group.
+
+Instead of sorting, we create a unique key from the frequency counts.
+
+Example key:
+
+```
+#1#0#0#0#1#0...#1
+```
+
+### Java Code
+
+```java
+import java.util.*;
+
+public class GroupAnagramsCount {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> map = new HashMap<>();
+
+        for (String s : strs) {
+            // Array to count frequency of each character (a-z)
+            int[] count = new int[26];
+
+            for (char c : s.toCharArray()) {
+                count[c - 'a']++;
+            }
+
+            // Convert frequency array into a unique string key
+            StringBuilder sb = new StringBuilder();
+
+            for (int freq : count) {
+                sb.append('#');
+                sb.append(freq);
+            }
+
+            String key = sb.toString();
+
+            // Group strings by key
+            if (!map.containsKey(key)) {
+                map.put(key, new ArrayList<>());
+            }
+
+            map.get(key).add(s);
+        }
+
+        return new ArrayList<>(map.values());
+    }
+}
+```
+
+### Complexity Analysis (Beginner Level)
+
+#### Time Complexity: O(N × K)
+
+We examine every character exactly once while counting frequencies.
+
+For each string:
+
+```
+Counting characters = O(K)
+```
+
+For N strings:
+
+```
+O(N × K)
+```
+
+This is faster than sorting because:
+
+```
+O(K) < O(K log K)
+```
+
+#### Space Complexity: O(N × K)
+
+The HashMap stores all strings grouped by their frequency keys.
+
+---
+
+# Comparison Summary
+
+| Method          | Time Complexity | Space Complexity | Best Used When                                            |
+| --------------- | --------------- | ---------------- | --------------------------------------------------------- |
+| Sorting         | O(N × K log K)  | O(N × K)         | Easy to understand and implement quickly in interviews    |
+| Frequency Count | O(N × K)        | O(N × K)         | Better for long strings and when optimization is required |
+
+---
+
+# Key Takeaways
+
+### Sorting Approach
+
+✅ Simple and intuitive
+
+✅ Easy to explain in interviews
+
+❌ Slower because sorting takes O(K log K)
+
+### Frequency Count Approach
+
+✅ Optimal solution
+
+✅ Avoids sorting completely
+
+✅ Runs in O(N × K)
+
+✅ Preferred when the interviewer asks for further optimization
+
+### Interview Strategy
+
+1. Start with the sorting solution.
+2. Explain its complexity: O(N × K log K).
+3. Then optimize using frequency counting.
+4. Mention that frequency counting reduces the complexity to O(N × K).
+
+This demonstrates both problem-solving ability and optimization skills.
+
+# =================================================================================================================================================================
+
