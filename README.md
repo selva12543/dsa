@@ -909,4 +909,194 @@ The HashMap stores all strings grouped by their frequency keys.
 This demonstrates both problem-solving ability and optimization skills.
 
 # =================================================================================================================================================================
+# Top K Frequent Elements (LeetCode 347)
 
+This problem asks you to find the **k most frequent elements** in an integer array.
+
+It is a classic interview problem that tests your understanding of:
+- Frequency counting using HashMap
+- Heap (Priority Queue) usage
+- Bucket sort optimization
+- Time-space tradeoffs
+
+---
+
+## 📌 Problem Statement
+
+Given an integer array `nums` and an integer `k`, return the `k` most frequent elements.
+
+You may return the answer in **any order**.
+
+---
+
+## 🧠 How to Identify This Problem
+
+You are likely dealing with a **Top K Frequent Elements** problem if you see:
+
+### Keywords / Patterns:
+- "most frequent"
+- "top k elements"
+- "k largest by frequency"
+- "sort by count"
+- "frequency of elements"
+
+### Hidden signals:
+- You need **counts of elements first**
+- Then you need **ranking by frequency**
+- Full sorting is usually **not required or too slow**
+- Input size is large → expect **O(N log k) or O(N)** solution
+
+### Core idea:
+> This is a **frequency + selection problem**, not a simple sorting problem.
+
+---
+
+## 🚀 Approach 1: Min Heap (Priority Queue)
+
+### 💡 Idea
+1. Count frequency using a `HashMap`
+2. Maintain a **min-heap of size k**
+3. Keep only the top k frequent elements
+4. Extract results from heap
+
+### ⏱ Complexity
+- Time: **O(N log k)**
+- Space: **O(N)**
+
+### ✅ Java Code
+
+```java
+import java.util.*;
+
+public class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+
+        Map<Integer, Integer> frequencyMap = new HashMap<>();
+        for (int num : nums) {
+            frequencyMap.put(num, frequencyMap.getOrDefault(num, 0) + 1);
+        }
+
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>(
+            (a, b) -> frequencyMap.get(a) - frequencyMap.get(b)
+        );
+
+        for (int key : frequencyMap.keySet()) {
+            minHeap.add(key);
+            if (minHeap.size() > k) {
+                minHeap.poll();
+            }
+        }
+
+        int[] result = new int[k];
+        for (int i = 0; i < k; i++) {
+            result[i] = minHeap.poll();
+        }
+
+        return result;
+    }
+}
+
+# Top K Frequent Elements — Bucket Sort Approach (Most Optimal)
+
+If you need the absolute fastest time complexity, the Bucket Sort method avoids the overhead of traversing a tree structure entirely.
+
+---
+
+## 🚀 Strategy
+
+1. **Count frequencies**
+   - Use a `HashMap` to store the frequency of each number.
+
+2. **Create buckets**
+   - Create an array of `List<Integer>` where:
+     - Index = frequency of elements
+   - Since a number can appear at most `N` times (where `N` is the length of the array), the bucket size is `N + 1`.
+
+3. **Fill buckets**
+   - Place each number into the bucket corresponding to its frequency.
+
+4. **Collect results**
+   - Traverse the bucket array from right to left (highest frequency → lowest)
+   - Collect elements until you have `k` results.
+
+---
+
+## 💻 Java Implementation
+
+```java
+import java.util.*;
+
+public class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        // Step 1: Build frequency map
+        Map<Integer, Integer> countMap = new HashMap<>();
+        for (int num : nums) {
+            countMap.put(num, countMap.getOrDefault(num, 0) + 1);
+        }
+
+        // Step 2: Create buckets (index = frequency)
+        List<Integer>[] buckets = new List[nums.length + 1];
+
+        for (int key : countMap.keySet()) {
+            int frequency = countMap.get(key);
+
+            if (buckets[frequency] == null) {
+                buckets[frequency] = new ArrayList<>();
+            }
+
+            buckets[frequency].add(key);
+        }
+
+        // Step 3: Gather top k frequent elements
+        int[] result = new int[k];
+        int index = 0;
+
+        for (int i = buckets.length - 1; i >= 0 && index < k; i--) {
+            if (buckets[i] != null) {
+                for (int num : buckets[i]) {
+                    result[index++] = num;
+                    if (index == k) {
+                        return result;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+}
+
+# ⏱️ Complexity Analysis
+
+## Time Complexity
+
+**O(N)**
+
+- Building frequency map → O(N)  
+- Filling buckets → O(N)  
+- Traversing buckets → O(N)  
+
+## Space Complexity
+
+**O(N)**
+
+- Frequency map + bucket array  
+
+---
+
+# 📌 Summary: Which One Should You Use?
+
+## ✔️ Use Min-Heap when:
+- Dataset is very large  
+- k is small  
+- You want a general-purpose, widely applicable solution  
+
+**Complexity:** O(N log k)
+
+---
+
+## ✔️ Use Bucket Sort when:
+- You need strict linear time performance  
+- Data is bounded and frequency-based grouping is efficient  
+
+**Complexity:** O(N) *(fastest possible in this case)*
