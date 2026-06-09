@@ -1100,3 +1100,593 @@ public class Solution {
 - Data is bounded and frequency-based grouping is efficient  
 
 **Complexity:** O(N) *(fastest possible in this case)*
+
+
+=================================================================================================================================================================
+
+
+# Product of Array Except Self
+
+## Problem Statement
+
+Given an integer array `nums`, return an array `answer` such that:
+
+```text
+answer[i] = product of all elements in nums except nums[i]
+```
+
+### Example
+
+```java
+Input:  [1,2,3,4]
+Output: [24,12,8,6]
+```
+
+Explanation:
+
+```text
+24 = 2 * 3 * 4
+12 = 1 * 3 * 4
+8  = 1 * 2 * 4
+6  = 1 * 2 * 3
+```
+
+---
+# product of a array Except self
+## How to Identify This Problem in Interviews
+
+Look for phrases like:
+
+* "Product of all elements except current element"
+* "Return array where each index contains product of remaining elements"
+* "Without using division"
+* "Optimize space complexity"
+* "Can you do it in O(n)?"
+
+These keywords usually indicate:
+
+```text
+Prefix Product + Suffix Product Pattern
+```
+
+---
+
+# Solution 1: Brute Force
+
+## Idea
+
+For every element:
+
+* Traverse entire array
+* Multiply all elements except itself
+
+## Code
+
+```java
+public static int[] bruteForce(int[] nums){
+    int n = nums.length;
+    int[] result = new int[n];
+
+    for(int i = 0; i < n; i++){
+        int product = 1;
+
+        for(int j = 0; j < n; j++){
+            if(i != j){
+                product *= nums[j];
+            }
+        }
+
+        result[i] = product;
+    }
+
+    return result;
+}
+```
+
+## Complexity
+
+```text
+Time  : O(n²)
+Space : O(1)
+```
+
+## When to Use
+
+* First approach that comes to mind
+* Good starting point in interviews
+* Helps explain optimization journey
+
+---
+
+# Solution 2: Division Method
+
+## Idea
+
+Find total product of array.
+
+```text
+answer[i] = totalProduct / nums[i]
+```
+
+## Code
+
+```java
+public static int[] divisionMethod(int[] nums){
+    int n = nums.length;
+    int[] result = new int[n];
+
+    int product = 1;
+
+    for(int num : nums){
+        product *= num;
+    }
+
+    for(int i = 0; i < n; i++){
+        result[i] = product / nums[i];
+    }
+
+    return result;
+}
+```
+
+## Complexity
+
+```text
+Time  : O(n)
+Space : O(1)
+```
+
+## Problem
+
+Fails when array contains zero.
+
+Example:
+
+```java
+nums = [1,2,0,4]
+```
+
+Total product becomes:
+
+```java
+0
+```
+
+Every division result becomes invalid.
+
+## When to Use
+
+Only when:
+
+* Division is allowed
+* No zeros exist
+
+Most interviews reject this solution.
+
+---
+
+# Solution 3: Prefix + Suffix Arrays
+
+## Idea
+
+Store:
+
+```text
+prefix[i] = product of all elements left of i
+
+suffix[i] = product of all elements right of i
+```
+
+Then:
+
+```text
+answer[i] = prefix[i] * suffix[i]
+```
+
+---
+
+## Visualization
+
+Array:
+
+```text
+[1,2,3,4]
+```
+
+Prefix:
+
+```text
+[1,1,2,6]
+```
+
+Suffix:
+
+```text
+[24,12,4,1]
+```
+
+Answer:
+
+```text
+[24,12,8,6]
+```
+
+---
+
+## Code
+
+```java
+public static int[] preSuffix(int[] nums){
+    int n = nums.length;
+
+    int[] result = new int[n];
+    int[] prefix = new int[n];
+    int[] suffix = new int[n];
+
+    prefix[0] = 1;
+
+    for(int i = 1; i < n; i++){
+        prefix[i] = prefix[i - 1] * nums[i - 1];
+    }
+
+    suffix[n - 1] = 1;
+
+    for(int i = n - 2; i >= 0; i--){
+        suffix[i] = suffix[i + 1] * nums[i + 1];
+    }
+
+    for(int i = 0; i < n; i++){
+        result[i] = prefix[i] * suffix[i];
+    }
+
+    return result;
+}
+```
+
+## Complexity
+
+```text
+Time  : O(n)
+Space : O(n)
+```
+
+## When to Use
+
+* Interviewer asks for O(n)
+* Space optimization not yet required
+* Easy to explain and debug
+
+---
+
+# Solution 4: Optimal Solution
+
+## Idea
+
+Store prefix products directly inside result array.
+
+Then traverse from right to left while maintaining:
+
+```java
+rightProduct
+```
+
+No separate suffix array needed.
+
+---
+
+## Code
+
+```java
+public static int[] optimalWay(int[] nums){
+    int n = nums.length;
+
+    int[] result = new int[n];
+
+    result[0] = 1;
+
+    for(int i = 1; i < n; i++){
+        result[i] = result[i - 1] * nums[i - 1];
+    }
+
+    int rightProduct = 1;
+
+    for(int i = n - 1; i >= 0; i--){
+        result[i] *= rightProduct;
+        rightProduct *= nums[i];
+    }
+
+    return result;
+}
+```
+
+## Complexity
+
+```text
+Time  : O(n)
+Space : O(1)
+```
+
+(Output array not counted as extra space)
+
+---
+
+# Dry Run
+
+Input:
+
+```java
+[1,2,3,4]
+```
+
+## Prefix Pass
+
+```text
+result = [1,1,2,6]
+```
+
+## Suffix Pass
+
+```text
+rightProduct = 1
+
+i=3 → result[3]=6
+rightProduct=4
+
+i=2 → result[2]=8
+rightProduct=12
+
+i=1 → result[1]=12
+rightProduct=24
+
+i=0 → result[0]=24
+```
+
+Final:
+
+```java
+[24,12,8,6]
+```
+
+---
+
+# Interview Progression
+
+Always present solutions in this order:
+
+## Step 1
+
+```text
+Brute Force O(n²)
+```
+
+Explain clearly.
+
+---
+
+## Step 2
+
+```text
+Division Method O(n)
+```
+
+Mention:
+
+"Fails when zeros are present."
+
+---
+
+## Step 3
+
+```text
+Prefix + Suffix O(n)
+```
+
+Show interviewer you recognize the pattern.
+
+---
+
+## Step 4
+
+```text
+Optimal O(n), O(1)
+```
+
+Most interviewers expect this final solution.
+
+---
+
+# Common Interview Follow-Up Questions
+
+## Q1: What if array contains one zero?
+
+Example:
+
+```java
+[1,2,0,4]
+```
+
+Output:
+
+```java
+[0,0,8,0]
+```
+
+Only index containing zero gets product of remaining numbers.
+
+---
+
+## Q2: What if array contains two zeros?
+
+Example:
+
+```java
+[1,0,2,0]
+```
+
+Output:
+
+```java
+[0,0,0,0]
+```
+
+Because every product contains at least one zero.
+
+---
+
+## Q3: Can we use division?
+
+Expected answer:
+
+```text
+Yes, but it fails with zeros and is usually disallowed.
+```
+
+---
+
+## Q4: Why initialize prefix and suffix with 1?
+
+Because:
+
+```text
+1 is multiplicative identity.
+```
+
+Example:
+
+```java
+prefix[0] = 1
+suffix[n-1] = 1
+```
+
+No element exists beyond boundaries.
+
+---
+
+## Q5: Why does the optimal solution use O(1) space?
+
+Because:
+
+```text
+Prefix array removed.
+Suffix array removed.
+Only one variable (rightProduct) is used.
+```
+
+---
+
+# Trick Questions
+
+## Trick 1
+
+```java
+nums = [0,0]
+```
+
+Expected:
+
+```java
+[0,0]
+```
+
+---
+
+## Trick 2
+
+```java
+nums = [5]
+```
+
+Expected:
+
+```java
+[1]
+```
+
+Product of empty set = 1
+
+---
+
+## Trick 3
+
+```java
+nums = [-1,1,-1,1]
+```
+
+Expected:
+
+```java
+[-1,1,-1,1]
+```
+
+Watch sign changes carefully.
+
+---
+
+## Trick 4
+
+```java
+nums = [100000,100000]
+```
+
+May cause integer overflow.
+
+Interviewers may ask:
+
+```text
+How would you handle large values?
+```
+
+Possible answer:
+
+```java
+Use long instead of int.
+```
+
+---
+
+# Pattern Recognition
+
+This problem belongs to:
+
+```text
+Prefix Sum / Prefix Product Pattern
+```
+
+Related Problems:
+
+1. Product of Array Except Self
+2. Trapping Rain Water
+3. Pivot Index
+4. Range Sum Query
+5. Maximum Product Subarray
+
+---
+
+# Key Interview Takeaway
+
+Whenever you hear:
+
+```text
+For every index, calculate something using all elements
+except itself
+```
+
+Think:
+
+```text
+Prefix + Suffix Pattern
+```
+
+And if interviewer asks for:
+
+```text
+O(1) extra space
+```
+
+Think:
+
+```text
+Store prefix in result array
++
+Maintain suffix using a running variable
+```
