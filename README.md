@@ -1690,3 +1690,196 @@ Store prefix in result array
 +
 Maintain suffix using a running variable
 ```
+
+
+
+
+
+
+# 9. Longest Consecutive Sequence
+
+## Problem Statement
+
+Given an unsorted array of integers `nums`, return the length of the longest consecutive sequence.
+
+A consecutive sequence consists of numbers that follow each other continuously, where each next number is exactly `+1`.
+
+### Example
+
+```java
+Input: [100, 4, 200, 1, 3, 2]
+
+Output: 4
+```
+
+Explanation:
+
+```text
+1, 2, 3, 4
+```
+
+is the longest consecutive sequence, so the answer is `4`.
+
+---
+
+# Intuition
+
+First, I put all numbers into a `HashSet` so I get **O(1)** lookup and duplicates are removed automatically.
+
+Then, for each number, I check whether `num - 1` exists.
+
+If `num - 1` exists, I skip that number because it means this number is already part of a sequence that started earlier.
+
+If `num - 1` does not exist, then I've found the start of a new consecutive sequence.
+
+From that starting point, I keep checking whether `currentNum + 1` exists in the set. If it does, I extend the sequence and increase the length.
+
+After the sequence ends, I compare its length with the longest length found so far.
+
+---
+
+# Approach
+
+1. Store all numbers in a `HashSet`.
+2. Iterate through each number in the set.
+3. Check if `num - 1` exists.
+   - If yes, skip it.
+   - If no, it is the start of a sequence.
+4. Expand the sequence by checking `currentNum + 1`.
+5. Count the sequence length.
+6. Update the maximum length found.
+
+---
+
+# Dry Run
+
+Input:
+
+```java
+[1, 2, 5, 6, 7, 8, 9, 12, 13]
+```
+
+HashSet:
+
+```java
+{1, 2, 5, 6, 7, 8, 9, 12, 13}
+```
+
+Sequences found:
+
+```text
+1, 2           -> length = 2
+5, 6, 7, 8, 9  -> length = 5
+12, 13         -> length = 2
+```
+
+Longest sequence:
+
+```text
+5
+```
+
+---
+
+# Java Solution
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+class Solution {
+
+    public int longestConsecutive(int[] nums) {
+
+        Set<Integer> set = new HashSet<>();
+
+        for (int num : nums) {
+            set.add(num);
+        }
+
+        int longest = 0;
+
+        for (int num : set) {
+
+            // Check if this is the start of a sequence
+            if (!set.contains(num - 1)) {
+
+                int currentNum = num;
+                int length = 1;
+
+                while (set.contains(currentNum + 1)) {
+                    currentNum++;
+                    length++;
+                }
+
+                longest = Math.max(longest, length);
+            }
+        }
+
+        return longest;
+    }
+}
+```
+
+---
+
+# Time Complexity
+
+### Building HashSet
+
+```text
+O(n)
+```
+
+### Iterating Through Set
+
+```text
+O(n)
+```
+
+### Expanding Sequences
+
+Each number is visited at most once across all sequences.
+
+```text
+O(n)
+```
+
+### Total
+
+```text
+O(n)
+```
+
+---
+
+# Space Complexity
+
+HashSet stores all elements.
+
+```text
+O(n)
+```
+
+---
+
+# Key Interview Pattern
+
+Whenever you see:
+
+- Unsorted array
+- Consecutive numbers
+- Repeated existence checks
+- Need for O(n) solution
+
+Think:
+
+```text
+HashSet
++
+Find sequence start (num - 1 does not exist)
++
+Expand using (num + 1)
+```
+
+This is the core pattern behind the optimal solution.
